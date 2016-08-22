@@ -11,7 +11,32 @@ const counter = (state = 0, action) => {
 }
 
 // const { createStore } = Redux; // Redux CDN import syntax
-import { createStore } from 'redux' // npm module syntax
+// import { createStore } from 'redux' // npm module syntax
+
+// Implementing Store from Scratch
+const createStore = (reducer) => {
+  let state;
+  let listeners = [];
+
+  const getState = () => state;
+
+  const dispatch = (action) => {
+    state = reducer(state, action);
+    listeners.forEach(listener => listener());
+  };
+
+  const subscribe = (listener) => {
+    listeners.push(listener);
+    return () => {
+      listeners = listeners.filter(l => l !== listener);
+    }
+  };
+
+  dispatch({}); // dummy dispatch
+
+  return { getState, dispatch, subscribe };
+
+};
 
 const store = createStore(counter);
 
@@ -31,3 +56,4 @@ render(); // calling once to render the initial state (0), then the subscribe wi
 document.addEventListener('click', () => {
    store.dispatch({ type : 'INCREMENT' })
 });
+
