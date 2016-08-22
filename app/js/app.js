@@ -1,59 +1,63 @@
-// a counter reducer
+/**
+ * chapter04: React Counter Example
+ */
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+
+// create store first
+import { createStore } from 'redux';
+
+// a reducer
 const counter = (state = 0, action) => {
-  switch (action.type) {
-    case 'INCREMENT':
-      return state + 1;
-    case 'DECREMENT':
-      return state - 1;
-    default:
-      return state;
-  }
+	console.log('counter reducer action', action)
+	switch (action.type) {
+		case 'INCREMENT':
+			return state + 1;
+		case 'DECREMENT':
+			return state - 1;
+		default: 
+			return state;
+	}
 }
 
-// const { createStore } = Redux; // Redux CDN import syntax
-// import { createStore } from 'redux' // npm module syntax
-
-// Implementing Store from Scratch
-const createStore = (reducer) => {
-  let state;
-  let listeners = [];
-
-  const getState = () => state;
-
-  const dispatch = (action) => {
-    state = reducer(state, action);
-    listeners.forEach(listener => listener());
-  };
-
-  const subscribe = (listener) => {
-    listeners.push(listener);
-    return () => {
-      listeners = listeners.filter(l => l !== listener);
-    }
-  };
-
-  dispatch({}); // dummy dispatch
-
-  return { getState, dispatch, subscribe };
-
-};
-
+// createStore
 const store = createStore(counter);
 
-/**
- * store has 3 important methods:
- * getState()
- * dispatch()
- * subscribe()
- */
+// React render like function
+const Counter = ({
+  value,
+  onIncrement,
+  onDecrement
+}) => (
+  <div>
+    <h1>{value}</h1>
+    <button onClick={onIncrement}>+</button>
+    <button onClick={onDecrement}>-</button>
+  </div>
+);
+
 const render = () => {
- document.body.innerText = store.getState();
-};
+  ReactDOM.render(
+    <Counter
+      value={store.getState()}
+      onIncrement={() =>
+        store.dispatch({
+          type: 'INCREMENT'
+        })
+      }
+      onDecrement={() =>
+        store.dispatch({
+          type: 'DECREMENT'
+        })
+      }
+    />,
+    document.getElementById('root')
+  );
+}
 
-store.subscribe(render);
-render(); // calling once to render the initial state (0), then the subscribe will update subsequently
+render();
 
-document.addEventListener('click', () => {
-   store.dispatch({ type : 'INCREMENT' })
-});
+// everytime store.dispatch, subscribe called
+store.subscribe(render)
 
