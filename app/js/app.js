@@ -1,5 +1,5 @@
 /**
- * chapter06: Avoiding Object Mutations with Object.assign() and ...spread
+ * chapter07: Writing a Todo List Reducer
  */
 
 import React from 'react';
@@ -9,19 +9,18 @@ import ReactDOM from 'react-dom';
 import { createStore } from 'redux';
 
 // a reducer
-const list = [{
-	id: 0,
-	text: 'list 0',
-	completed: false,
-}, {
-	id: 1,
-	text: 'list 1',
-	completed: false,
-}];
-
-const todos = (state = list, action) => {
+const todos = (state = [], action) => {
 	Object.freeze(state);
 	switch (action.type) {
+		case 'ADD_TODO':
+			return [
+				...state,
+				{
+					id: action.id,
+					text: action.text,
+					completed: false,
+				}
+			];
 		case 'TOGGLE_TODO':
 			return state.map(todo => {
 				if (action.id !== todo.id) {
@@ -41,8 +40,11 @@ const todos = (state = list, action) => {
 // createStore
 const store = createStore(todos);
 
+var count = 0,
+		redux = ['r', 'e', 'd', 'u', 'x'];
+
 // React render like function
-const Counter = ({
+const Todos = ({
   todos,
 }) => {
 	let list = todos.map(todo => {
@@ -61,13 +63,25 @@ const Counter = ({
 	    <ul>
 	    	{list}
 	    </ul>
+	    <button onClick={() => {
+	    	let _text = redux.slice().sort(function() {
+				  return .5 - Math.random();
+				});
+	    	store.dispatch({
+		    	type: 'ADD_TODO',
+		    	id: count,
+		    	text: _text.join('')
+		    });
+
+		    count++;
+	    }}>add todo</button>
 	  </div>
 	);
 }
 
 const render = () => {
   ReactDOM.render(
-    <Counter
+    <Todos
       todos={store.getState()}
     />,
     document.getElementById('root')
