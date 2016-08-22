@@ -1,5 +1,5 @@
 /**
- * chapter05: Avoiding Array Mutations
+ * chapter06: Avoiding Object Mutations with Object.assign() and ...spread
  */
 
 import React from 'react';
@@ -9,54 +9,58 @@ import ReactDOM from 'react-dom';
 import { createStore } from 'redux';
 
 // a reducer
-// const counter = (state = [1, 3, 5], action) => {
-// 	Object.freeze(state);
-// 	let len = state.length;
-// 	switch (action.type) {
-// 		case 'PUSH':
-// 			state.push(len*2 + 1)
-// 			return state;
-// 		case 'SPLICE':
-// 			state.splice(len - 1, 1);
-// 			return state;
-// 		default: 
-// 			return state;
-// 	}
-// }
+const list = [{
+	id: 0,
+	text: 'list 0',
+	completed: false,
+}, {
+	id: 1,
+	text: 'list 1',
+	completed: false,
+}];
 
-const counter = (state = [1, 3, 5], action) => {
-	Object.freeze(state); // this is default, because of state track and virtue dom diff
-	let len = state.length;
+const todos = (state = list, action) => {
+	Object.freeze(state);
 	switch (action.type) {
-		case 'PUSH':
-			return [
-				...state,
-				len * 2 + 1,
-			];
-		case 'SPLICE':
-			return [
-				...state.slice(0, len-1)
-			];
+		case 'TOGGLE_TODO':
+			return state.map(todo => {
+				if (action.id !== todo.id) {
+					return todo;
+				}
+
+				return {
+					...todo,
+					completed: !todo.completed,
+				}
+			});
 		default: 
 			return state;
 	}
 }
 
 // createStore
-const store = createStore(counter);
+const store = createStore(todos);
 
 // React render like function
 const Counter = ({
-  value,
-  onIncrement,
-  onDecrement
+  todos,
 }) => {
-	console.log('component render ***')
+	let list = todos.map(todo => {
+		return <li 
+			key={todo.id} 
+			style={{fontSize: 16, color: todo.completed ? '#aaa' : '#00a'}}>
+				<a onClick={() => store.dispatch({
+					type: 'TOGGLE_TODO',
+					id: todo.id,
+				})}>{todo.text}</a>
+			</li>
+	})
+
 	return (
 	  <div>
-	    <h1>{value}</h1>
-	    <button onClick={onIncrement}>+</button>
-	    <button onClick={onDecrement}>-</button>
+	    <ul>
+	    	{list}
+	    </ul>
 	  </div>
 	);
 }
@@ -64,17 +68,7 @@ const Counter = ({
 const render = () => {
   ReactDOM.render(
     <Counter
-      value={store.getState().join(', ')}
-      onIncrement={() =>
-        store.dispatch({
-          type: 'PUSH'
-        })
-      }
-      onDecrement={() =>
-        store.dispatch({
-          type: 'SPLICE'
-        })
-      }
+      todos={store.getState()}
     />,
     document.getElementById('root')
   );
