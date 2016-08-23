@@ -1,5 +1,5 @@
 /**
- * chapter15: Extracting Presentational Components (Todo, Todolist)
+ * chapter16: Extracting Presentational Components (AddTodo, Footer, FilterLink)
  * 组件分离
  */
 
@@ -75,62 +75,6 @@ const todoApp = combineReducers({
 // createStore
 const store = createStore(todoApp);
 
-// a function like component that filter special todo
-// the only return is the component render
-const FilterLink = ({
-  filter,
-  currentFilter,
-  children
-}) => {
-	if (filter === currentFilter) {
-		return <span>{children}</span>
-	}
-
-  return (
-    <a href='#'
-       onClick={e => {
-         e.preventDefault();
-         store.dispatch({
-           type: 'SET_VISIBILITY_FILTER',
-           filter
-         });
-       }}
-    >
-      {children}
-    </a>
-  )
-}
-
-// function like FliterLinks component
-const FilterLinks = ({
-	visibilityFilter
-}) => (
-	<p>
-	  Show:
-	  {' '}
-	  <FilterLink
-	    filter='SHOW_ALL'
-	    currentFilter={visibilityFilter}
-	  >
-	    All
-	  </FilterLink>
-	  {' '}
-	  <FilterLink
-	    filter='SHOW_ACTIVE'
-	    currentFilter={visibilityFilter}
-	  >
-	    Active
-	  </FilterLink>
-	  {' '}
-	  <FilterLink
-	    filter='SHOW_COMPLETED'
-	    currentFilter={visibilityFilter}
-	  >
-	    Completed
-	  </FilterLink>
-	</p>
-)
-
 // a normal function
 // base on todos & filter, get visible todos
 const getVisibleTodos = (
@@ -184,6 +128,84 @@ const TodoList = ({
 	</ul>
 )
 
+// extract component AddTodo
+const AddTodo = ({
+	onAddClick
+}) => {
+	let input;
+
+	return (
+		<div>
+			<input ref={node => {input = node}} />
+
+			<button onClick={() => {
+				onAddClick(input.value);
+				input.value = '';
+			}}>Add Todo</button>
+		</div>
+	)
+}
+
+// extract component FilterLink
+const FilterLink = ({
+  filter,
+  currentFilter,
+  onClick,
+  children
+}) => {
+	if (filter === currentFilter) {
+		return <span>{children}</span>
+	}
+
+  return (
+    <a href='#'
+       onClick={e => {
+       	console.log('FilterLink component onClick ***', filter)
+       	e.preventDefault();
+       	onClick(filter);
+       }}
+    >
+      {children}
+    </a>
+  )
+}
+
+// extract component Footer
+const Footer = ({
+	visibilityFilter,
+	onFilterClick
+}) => (
+	<p>
+	  Show:
+	  {' '}
+	  <FilterLink
+	    filter='SHOW_ALL'
+	    currentFilter={visibilityFilter}
+	    onClick={onFilterClick}
+	  >
+	    All
+	  </FilterLink>
+	  {' '}
+	  <FilterLink
+	    filter='SHOW_ACTIVE'
+	    currentFilter={visibilityFilter}
+	    onClick={onFilterClick}
+	  >
+	    Active
+	  </FilterLink>
+	  {' '}
+	  <FilterLink
+	    filter='SHOW_COMPLETED'
+	    currentFilter={visibilityFilter}
+	    onClick={onFilterClick}
+	  >
+	    Completed
+	  </FilterLink>
+	</p>
+)
+
+
+
 let nextTodoId = 0;
 
 /**
@@ -200,6 +222,15 @@ class TodoApp extends Component {
 
 		return (
 			<div>
+				<AddTodo
+					onAddClick={text => {
+						store.dispatch({
+							type: 'ADD_TODO',
+							id: nextTodoId++,
+							text
+						})
+					}} />
+
 				<TodoList
 					todos={visibleTodos}
 					onTodoClick={id => {
@@ -209,19 +240,15 @@ class TodoApp extends Component {
 						})
 					}} />
 
-				<FilterLinks visibilityFilter={visibilityFilter} />
-
-				<input ref={node => {this.input = node}} />
-
-				<button onClick={() => {
-					store.dispatch({
-						type: 'ADD_TODO',
-						id: nextTodoId++,
-						text: this.input.value,
-					})
-
-					this.input.value = '';
-				}}>Add Todo</button>
+				<Footer 
+					visibilityFilter={visibilityFilter}
+					onFilterClick={filter => {
+						console.log('Footer component onFilterClick ***', filter)
+						store.dispatch({
+							type: 'SET_VISIBILITY_FILTER',
+							filter
+						})
+					}} />				
 			</div>
 		)
 	}
@@ -256,5 +283,9 @@ store.subscribe(render)
  *		 and then rerender UI base on the new state, becauseof the store.subscribe()
  */
 
+ /**
+  * @component in component interact (组件内的交互)
+  * @data flow from top to bottom, event emit from bottom to top (数据向下流动，事件向上传递)
+  */
 
 
