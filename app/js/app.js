@@ -1,12 +1,12 @@
 /**
- * chapter10: Reducer Composition with combineReducers()
+ * chapter11: Implementing combineReducers() from Scratch
  */
 
 import React from 'react';
 import ReactDOM from 'react-dom';
 
 // create a top level store with combineReducers
-import { createStore, combineReducers } from 'redux';
+import { createStore } from 'redux';
 
 // reducer composition with arrays
 const todo = (state, action) => {
@@ -91,17 +91,62 @@ const visibilityFilter = (state = 'SHOW_ALL', action) => {
 //   };
 // };
 
+// Implementing combineReducers from scratch
+const combineReducers = reducers => {
+  return (state = {}, action) => {
+    // Reduce all the keys for reducers from `todos` and `visibilityFilter`
+    return Object.keys(reducers).reduce(
+      (nextState, key) => {
+        // Call the corresponding reducer function for a given key
+        nextState[key] = reducers[key] (
+          state[key],
+          action
+        );
+        return nextState;
+      },
+      {} // The `reduce` on our keys gradually fills this empty object until it is returned.
+    );
+  };
+};
+
+///////////////////////////////////////////////////////////////////
 /**
- * now, we use combineReducers rewrite it
- * By convention, the state keys should be named after the reducers that manage them. 
- *
- * combineReducers 做了什么？@@redux/INIT && @@redux/PROBE_UNKNOWN_ACTION_4.x.x.e.6.6.x.l.o.j.1.d.d.0.y.b.v.s.4.i
+ * so, what is javascript function Array.prototype.reduce do ?
+ */
+var _arr1 = [0, 1, 2, 3],
+		_arr2 = [[0, 1], [2, 3], [4, 5]],
+		_arr3 = ['hello', 'world'];
+
+var arr1 = _arr1.reduce(function (previousValue, currentValue, index, array) {
+	return previousValue + currentValue;
+}, 10);
+
+console.log('_arr1', _arr1)
+console.log('arr1', arr1)
+
+var arr2 = _arr2.reduce(function (previousValue, currentValue, index, array) {
+	return previousValue.concat(currentValue);
+}, [8, 0]);
+
+console.log('_arr2', _arr2)
+console.log('arr2', arr2)
+
+var arr3 = _arr3.reduce(function (nextState, key) {
+	nextState[key] = key.toUpperCase();
+	return nextState;
+}, {});
+
+console.log('_arr3', _arr3)
+console.log('arr3', arr3)
+////////////////////////////////////////////////////////////////////
+
+/**
+ * now, we use our combineReducers
  */
 const todoApp = combineReducers({
 	todos,
 	visibilityFilter
 });
-
 
 // createStore
 const store = createStore(todoApp);
