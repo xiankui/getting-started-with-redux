@@ -1,5 +1,5 @@
 /**
- * chapter12: React Todo List Example (Adding a Todo)
+ * chapter13: React Todo List Example (Toggling a Todo)
  */
 
 import React, { Component } from 'react';
@@ -35,8 +35,6 @@ const todo = (state, action) => {
 }
 
 const todos = (state = [], action) => {
-	console.log('dispatch to reducer todos ---', action)
-
 	Object.freeze(state);
 
 	switch (action.type) {
@@ -55,7 +53,6 @@ const todos = (state = [], action) => {
 
 // To store this new information, we don't need to change the existing reducers.
 const visibilityFilter = (state = 'SHOW_ALL', action) => {
-	console.log('dispatch to reducer visibilityFilter ***', action);
 	Object.freeze(state);
 	switch (action.type) {
 		case 'SET_VISIBILITY_FILTER':
@@ -89,7 +86,17 @@ class TodoApp extends Component {
 				<ul>
 					{
 						this.props.todos.map(todo => {
-							return <li key={todo.id}>{todo.text}</li>;
+							return <li 
+											key={todo.id}
+											onClick={() => {
+												store.dispatch({
+													type: 'TOGGLE_TODO',
+													id: todo.id,
+												})
+											}}
+											style={{
+												textDecoration: todo.completed ? 'line-through' : 'none'
+											}}>{todo.text}</li>;
 						})
 					}
 				</ul>
@@ -109,45 +116,6 @@ class TodoApp extends Component {
 		)
 	}
 }
-
-// var count = 0,
-// 		redux = ['r', 'e', 'd', 'u', 'x'];
-
-// // React render like function
-// const Todos = ({
-//   todos,
-// }) => {
-// 	let list = todos.map(todo => {
-// 		return <li 
-// 			key={todo.id} 
-// 			style={{fontSize: 16, color: todo.completed ? '#aaa' : '#00a'}}>
-// 				<a onClick={() => store.dispatch({
-// 					type: 'TOGGLE_TODO',
-// 					id: todo.id,
-// 				})}>{todo.text}</a>
-// 			</li>
-// 	})
-
-// 	return (
-// 	  <div>
-// 	    <ul>
-// 	    	{list}
-// 	    </ul>
-// 	    <button onClick={() => {
-// 	    	let _text = redux.slice().sort(function() {
-// 				  return .5 - Math.random();
-// 				});
-// 	    	store.dispatch({
-// 		    	type: 'ADD_TODO',
-// 		    	id: count,
-// 		    	text: _text.join('')
-// 		    });
-
-// 		    count++;
-// 	    }}>add todo</button>
-// 	  </div>
-// 	);
-// }
 
 const render = () => {
   ReactDOM.render(
