@@ -1,5 +1,6 @@
 /**
- * chapter14: React Todo List Example (Filtering Todos)
+ * chapter15: Extracting Presentational Components (Todo, Todolist)
+ * 组件分离
  */
 
 import React, { Component } from 'react';
@@ -64,7 +65,7 @@ const visibilityFilter = (state = 'SHOW_ALL', action) => {
 
 
 /**
- * now, we use our combineReducers
+ * combineReducers to get a root reducer
  */
 const todoApp = combineReducers({
 	todos,
@@ -151,6 +152,38 @@ const getVisibleTodos = (
   }
 }
 
+// extract component Todo
+const Todo = ({
+	onClick,
+	completed,
+	text
+}) => (
+	<li
+		onClick={onClick}
+		style={{
+			textDecoration: completed ? 'line-through' : 'none'
+		}}>
+		{text}
+	</li>
+)
+
+// extract component TodoList
+const TodoList = ({
+	todos,
+	onTodoClick
+}) => (
+	<ul>
+		{
+			todos.map(todo => 
+				<Todo
+					key={todo.id}
+					{...todo}
+					onClick={() => onTodoClick(todo.id)} />
+			)
+		}
+	</ul>
+)
+
 let nextTodoId = 0;
 
 /**
@@ -162,26 +195,19 @@ class TodoApp extends Component {
 			todos,
 			visibilityFilter
 		} = this.props;
+
 		let visibleTodos = getVisibleTodos(todos, visibilityFilter)
+
 		return (
 			<div>
-				<ul>
-					{
-						visibleTodos.map(todo => {
-							return <li 
-											key={todo.id}
-											onClick={() => {
-												store.dispatch({
-													type: 'TOGGLE_TODO',
-													id: todo.id,
-												})
-											}}
-											style={{
-												textDecoration: todo.completed ? 'line-through' : 'none'
-											}}>{todo.text}</li>;
+				<TodoList
+					todos={visibleTodos}
+					onTodoClick={id => {
+						store.dispatch({
+							type: 'TOGGLE_TODO',
+							id
 						})
-					}
-				</ul>
+					}} />
 
 				<FilterLinks visibilityFilter={visibilityFilter} />
 
