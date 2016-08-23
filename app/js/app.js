@@ -1,12 +1,12 @@
 /**
- * chapter09: Reducer Composition with Objects
+ * chapter10: Reducer Composition with combineReducers()
  */
 
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-// create store first
-import { createStore } from 'redux';
+// create a top level store with combineReducers
+import { createStore, combineReducers } from 'redux';
 
 // reducer composition with arrays
 const todo = (state, action) => {
@@ -35,7 +35,7 @@ const todo = (state, action) => {
 }
 
 const todos = (state = [], action) => {
-	console.log('dispatch to reducer todos ---')
+	console.log('dispatch to reducer todos ---', action)
 
 	Object.freeze(state);
 
@@ -55,7 +55,7 @@ const todos = (state = [], action) => {
 
 // To store this new information, we don't need to change the existing reducers.
 const visibilityFilter = (state = 'SHOW_ALL', action) => {
-	console.log('dispatch to reducer visibilityFilter ***');
+	console.log('dispatch to reducer visibilityFilter ***', action);
 	Object.freeze(state);
 	switch (action.type) {
 		case 'SET_VISIBILITY_FILTER':
@@ -77,19 +77,31 @@ const visibilityFilter = (state = 'SHOW_ALL', action) => {
  *
  * 每一次dispatch都会流过每一个子reducer
  */
-const todoApp = (state = {}, action) => {
-  return {
-     // Call the `todos()` reducer from last section
-     todos: todos( 
-      state.todos,
-      action
-    ),
-    visibilityFilter: visibilityFilter(
-      state.visibilityFilter,
-      action
-    )
-  };
-};
+// const todoApp = (state = {}, action) => {
+//   return {
+//      // Call the `todos()` reducer from last section
+//      todos: todos( 
+//       state.todos,
+//       action
+//     ),
+//     visibilityFilter: visibilityFilter(
+//       state.visibilityFilter,
+//       action
+//     )
+//   };
+// };
+
+/**
+ * now, we use combineReducers rewrite it
+ * By convention, the state keys should be named after the reducers that manage them. 
+ *
+ * combineReducers 做了什么？@@redux/INIT && @@redux/PROBE_UNKNOWN_ACTION_4.x.x.e.6.6.x.l.o.j.1.d.d.0.y.b.v.s.4.i
+ */
+const todoApp = combineReducers({
+	todos,
+	visibilityFilter
+});
+
 
 // createStore
 const store = createStore(todoApp);
