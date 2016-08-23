@@ -1,5 +1,5 @@
 /**
- * chapter13: React Todo List Example (Toggling a Todo)
+ * chapter14: React Todo List Example (Filtering Todos)
  */
 
 import React, { Component } from 'react';
@@ -74,6 +74,83 @@ const todoApp = combineReducers({
 // createStore
 const store = createStore(todoApp);
 
+// a function like component that filter special todo
+// the only return is the component render
+const FilterLink = ({
+  filter,
+  currentFilter,
+  children
+}) => {
+	if (filter === currentFilter) {
+		return <span>{children}</span>
+	}
+
+  return (
+    <a href='#'
+       onClick={e => {
+         e.preventDefault();
+         store.dispatch({
+           type: 'SET_VISIBILITY_FILTER',
+           filter
+         });
+       }}
+    >
+      {children}
+    </a>
+  )
+}
+
+// function like FliterLinks component
+const FilterLinks = ({
+	visibilityFilter
+}) => (
+	<p>
+	  Show:
+	  {' '}
+	  <FilterLink
+	    filter='SHOW_ALL'
+	    currentFilter={visibilityFilter}
+	  >
+	    All
+	  </FilterLink>
+	  {' '}
+	  <FilterLink
+	    filter='SHOW_ACTIVE'
+	    currentFilter={visibilityFilter}
+	  >
+	    Active
+	  </FilterLink>
+	  {' '}
+	  <FilterLink
+	    filter='SHOW_COMPLETED'
+	    currentFilter={visibilityFilter}
+	  >
+	    Completed
+	  </FilterLink>
+	</p>
+)
+
+// a normal function
+// base on todos & filter, get visible todos
+const getVisibleTodos = (
+  todos,
+  filter
+) => {
+  switch (filter) {
+    case 'SHOW_ALL':
+      return todos;
+    case 'SHOW_COMPLETED':
+      // Use the `Array.filter()` method
+      return todos.filter(
+        t => t.completed
+      );
+    case 'SHOW_ACTIVE':
+      return todos.filter(
+        t => !t.completed
+      );
+  }
+}
+
 let nextTodoId = 0;
 
 /**
@@ -81,11 +158,16 @@ let nextTodoId = 0;
  */
 class TodoApp extends Component {
 	render() {
+		let {
+			todos,
+			visibilityFilter
+		} = this.props;
+		let visibleTodos = getVisibleTodos(todos, visibilityFilter)
 		return (
 			<div>
 				<ul>
 					{
-						this.props.todos.map(todo => {
+						visibleTodos.map(todo => {
 							return <li 
 											key={todo.id}
 											onClick={() => {
@@ -100,6 +182,8 @@ class TodoApp extends Component {
 						})
 					}
 				</ul>
+
+				<FilterLinks visibilityFilter={visibilityFilter} />
 
 				<input ref={node => {this.input = node}} />
 
@@ -120,7 +204,7 @@ class TodoApp extends Component {
 const render = () => {
   ReactDOM.render(
     <TodoApp
-      todos={store.getState().todos}
+      {...store.getState()}
     />,
     document.getElementById('root')
   );
@@ -131,4 +215,20 @@ render();
 // everytime store.dispatch, subscribe called and rerender a new ui of current state
 // Now the cycle can be repeated.
 store.subscribe(render)
+
+/**
+ * @remind always
+ * @1. one state map one UI
+ * @2. any dispatch function calls the root reducer, return a new state
+ */
+
+/**
+ * @lifecycle
+ * @1. when createStore(), state had been dispatched as default already.
+ * @2. when render(), @@rudex/INIT state will be render UI
+ * @3. when any dispatch function calls, will return a new state, 
+ *		 and then rerender UI base on the new state, becauseof the store.subscribe()
+ */
+
+
 
