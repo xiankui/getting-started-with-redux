@@ -1,174 +1,16 @@
 /**
- * chapter21: Passing the Store Down with <Provider> from React Redux
+ * chapter22: Generating Containers with connect() from React Redux (VisibleTodoList)
  */
 
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-// create a top level store with combineReducers
-import { createStore, combineReducers } from 'redux';
+import store from './store';
 import { Provider } from 'react-redux';
 
-// reducer composition with arrays
-const todo = (state, action) => {
-	Object.freeze(state);
-
-	switch (action.type) {
-		case 'ADD_TODO':
-			return {
-				id: action.id,
-				text: action.text,
-				completed: false,
-			};
-
-		case 'TOGGLE_TODO':
-			if (state.id !== action.id) {
-					return state;
-				}
-
-				return {
-					...state,
-					completed: !state.completed,
-				}
-		default: 
-			return state;
-	}
-}
-
-const todos = (state = [], action) => {
-	Object.freeze(state);
-
-	switch (action.type) {
-		case 'ADD_TODO':
-			return [
-				...state,
-				todo(undefined, action),
-			];
-		case 'TOGGLE_TODO':
-			return state.map(t => todo(t, action));
-		default: 
-			return state;
-	}
-}
+import VisibleTodoList from './components/TodoList.jsx';
 
 
-// To store this new information, we don't need to change the existing reducers.
-const visibilityFilter = (state = 'SHOW_ALL', action) => {
-	Object.freeze(state);
-	switch (action.type) {
-		case 'SET_VISIBILITY_FILTER':
-			return action.filter;
-		default: 
-			return state;
-	}
-}
-
-
-/**
- * combineReducers to get a root reducer
- */
-const todoApp = combineReducers({
-	todos,
-	visibilityFilter
-});
-
-// createStore
-const store = createStore(todoApp);
-
-// a normal function
-// base on todos & filter, get visible todos
-const getVisibleTodos = (
-  todos,
-  filter
-) => {
-  switch (filter) {
-    case 'SHOW_ALL':
-      return todos;
-    case 'SHOW_COMPLETED':
-      // Use the `Array.filter()` method
-      return todos.filter(
-        t => t.completed
-      );
-    case 'SHOW_ACTIVE':
-      return todos.filter(
-        t => !t.completed
-      );
-  }
-}
-
-// extract presentational component Todo
-const Todo = ({
-	onClick,
-	completed,
-	text
-}) => (
-	<li
-		onClick={onClick}
-		style={{
-			textDecoration: completed ? 'line-through' : 'none'
-		}}>
-		{text}
-	</li>
-)
-
-// extract presentational component TodoList
-const TodoList = ({
-	todos,
-	onTodoClick
-}) => (
-	<ul>
-		{
-			todos.map(todo => 
-				<Todo
-					key={todo.id}
-					{...todo}
-					onClick={() => onTodoClick(todo.id)} />
-			)
-		}
-	</ul>
-)
-
-// extract reactive component VisibleTodoList
-class VisibleTodoList extends Component {
-  componentDidMount() {
-  	console.log('context', this.context)
-  	const {store} = this.context;
-    this.unsubscribe = store.subscribe(() =>
-      this.forceUpdate()
-    );
-  }
-
-  componentWillUnmount() {
-    this.unsubscribe();
-  }
-
-  render() {
-    // const props = this.props;
-    const {store} = this.context;
-    const state = store.getState();
-
-    return (
-      <TodoList
-        todos={
-          getVisibleTodos(
-            state.todos,
-            state.visibilityFilter
-          )
-        }
-        onTodoClick={id =>
-          store.dispatch({
-            type: 'TOGGLE_TODO',
-            id
-          })
-        }
-      />
-    );
-  }
-}
-
-VisibleTodoList.contextTypes = {
-  store: React.PropTypes.object
-}
 
 // extract reactive component AddTodo
 class AddTodo extends Component {
@@ -331,20 +173,20 @@ const TodoApp = () => (
 //   store: React.PropTypes.object
 // }
 
-const render = () => {
+// const render = () => {
   ReactDOM.render(
     <Provider store={store}>
     	<TodoApp />
     </Provider>,
     document.getElementById('root')
   );
-}
+// }
 
-render();
+// render();
 
 // everytime store.dispatch, subscribe called and rerender a new ui of current state
 // Now the cycle can be repeated.
-store.subscribe(render)
+// store.subscribe(render)
 
 /**
  * @remind always
