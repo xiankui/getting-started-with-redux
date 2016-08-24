@@ -1,6 +1,5 @@
 /**
- * chapter16: Extracting Presentational Components (AddTodo, Footer, FilterLink)
- * 组件分离
+ * chapter17: Extracting Container Components (FilterLink)
  */
 
 import React, { Component } from 'react';
@@ -146,58 +145,92 @@ const AddTodo = ({
 	)
 }
 
-// extract component FilterLink
-const FilterLink = ({
-  filter,
-  currentFilter,
-  onClick,
-  children
+
+// extract presentational component Link
+// 提取成表象组件，没有逻辑，只是直观的渲染
+const Link = ({
+	active,
+	onClick,
+	children
 }) => {
-	if (filter === currentFilter) {
+	if (active) {
 		return <span>{children}</span>
 	}
 
-  return (
-    <a href='#'
-       onClick={e => {
-       	console.log('FilterLink component onClick ***', filter)
-       	e.preventDefault();
-       	onClick(filter);
-       }}
-    >
-      {children}
-    </a>
-  )
+	return (
+		<a 
+			href='#'
+			onClick={(e) => {
+			 	e.preventDefault();
+			 	onClick();
+			}}
+		>
+			 {children}
+		</a>
+	)
 }
 
-// extract component Footer
-const Footer = ({
-	visibilityFilter,
-	onFilterClick
-}) => (
+// extract reactive component FilterLink
+// 提取成交互组件
+class FilterLink extends Component {
+	componentDidMount() {
+		// console.log('FilterLink componentDidMount')
+    this.unsubscribe = store.subscribe(() => {
+    	console.log('FilterLink forceUpdate')
+      this.forceUpdate()
+    });
+  }
+
+  // Since the subscription happens in `componentDidMount`,
+  // it's important to unsubscribe in `componentWillUnmount`.
+  componentWillUnmount() {
+  	// console.log('FilterLink componentWillUnmount')
+    this.unsubscribe(); // return value of `store.subscribe()`
+  }
+  render () {
+    const props = this.props;
+    // this just reads the store, is not listening
+    // for change messages from the store updating
+    const state = store.getState();
+
+    return (
+      <Link
+        active={
+          props.filter ===
+          state.visibilityFilter
+        }
+        onClick={() =>
+          store.dispatch({
+            type: 'SET_VISIBILITY_FILTER',
+            filter: props.filter
+          })
+        }
+      >
+        {props.children}
+      </Link>
+    );
+  }
+}
+
+// extract presentational component Footer
+const Footer = () => (
 	<p>
 	  Show:
 	  {' '}
 	  <FilterLink
 	    filter='SHOW_ALL'
-	    currentFilter={visibilityFilter}
-	    onClick={onFilterClick}
 	  >
 	    All
 	  </FilterLink>
 	  {' '}
 	  <FilterLink
 	    filter='SHOW_ACTIVE'
-	    currentFilter={visibilityFilter}
-	    onClick={onFilterClick}
 	  >
 	    Active
 	  </FilterLink>
 	  {' '}
 	  <FilterLink
 	    filter='SHOW_COMPLETED'
-	    currentFilter={visibilityFilter}
-	    onClick={onFilterClick}
 	  >
 	    Completed
 	  </FilterLink>
@@ -240,21 +273,14 @@ class TodoApp extends Component {
 						})
 					}} />
 
-				<Footer 
-					visibilityFilter={visibilityFilter}
-					onFilterClick={filter => {
-						console.log('Footer component onFilterClick ***', filter)
-						store.dispatch({
-							type: 'SET_VISIBILITY_FILTER',
-							filter
-						})
-					}} />				
+				<Footer />				
 			</div>
 		)
 	}
 }
 
 const render = () => {
+	console.log('render ***')
   ReactDOM.render(
     <TodoApp
       {...store.getState()}
@@ -284,8 +310,9 @@ store.subscribe(render)
  */
 
  /**
-  * @component in component interact (组件内的交互)
-  * @data flow from top to bottom, event emit from bottom to top (数据向下流动，事件向上传递)
+  * @two type of component 
+  * @1. presentational component (表象、直觉)
+  * @2. reactive component (交互性)
   */
 
 
