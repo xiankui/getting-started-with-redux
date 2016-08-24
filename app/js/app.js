@@ -1,5 +1,5 @@
 /**
- * chapter22: Generating Containers with connect() from React Redux (VisibleTodoList)
+ * chapter23: Generating Containers with connect() from React Redux (AddTodo)
  */
 
 import React, { Component } from 'react';
@@ -8,41 +8,8 @@ import ReactDOM from 'react-dom';
 import store from './store';
 import { Provider } from 'react-redux';
 
-import VisibleTodoList from './components/TodoList.jsx';
-
-
-
-// extract reactive component AddTodo
-class AddTodo extends Component {
-	constructor(props) {
-	  super(props);
-	
-	  this.input = null;
-	  this.nextTodoId = 0;
-	}
-
-	addTodo() {
-		this.context.store.dispatch({
-      type: 'ADD_TODO',
-      id: this.nextTodoId++,
-      text: this.input.value
-    });
-		this.input.value = '';
-	}
-
-	render() {
-		return (
-			<div>
-				<input ref={node => {this.input = node}} />
-				<button onClick={this.addTodo.bind(this)}>Add Todo</button>
-			</div>
-		)
-	}
-}
-
-AddTodo.contextTypes = {
-  store: React.PropTypes.object
-}
+import TodoList from './components/TodoList.jsx';
+import AddTodo from './components/AddTodo.jsx';
 
 
 // extract presentational component Link
@@ -148,30 +115,11 @@ const Footer = () => (
 const TodoApp = () => (
   <div>
     <AddTodo />
-    <VisibleTodoList />
+    <TodoList />
     <Footer />
   </div>
 );
 
-
-/**
- * define a Provider component to pass store to every child component through Context implicity
- * but use the context feature is not a good idea in React philosophy.
- */
-// class Provider extends Component {
-//   getChildContext() {
-//     return {
-//       store: this.props.store // This corresponds to the `store` passed in as a prop
-//     };
-//   }
-//   render() {
-//     return this.props.children;
-//   }
-// }
-
-// Provider.childContextTypes = {
-//   store: React.PropTypes.object
-// }
 
 // const render = () => {
   ReactDOM.render(
@@ -183,29 +131,5 @@ const TodoApp = () => (
 // }
 
 // render();
-
-// everytime store.dispatch, subscribe called and rerender a new ui of current state
-// Now the cycle can be repeated.
-// store.subscribe(render)
-
-/**
- * @remind always
- * @1. one state map one UI
- * @2. any dispatch function calls the root reducer, return a new state
- */
-
-/**
- * @lifecycle
- * @1. when createStore(), state had been dispatched as default already.
- * @2. when render(), @@rudex/INIT state will be render UI
- * @3. when any dispatch function calls, will return a new state, 
- *		 and then rerender UI base on the new state, becauseof the store.subscribe()
- */
-
- /**
-  * @two type of component 
-  * @1. presentational component (表象、直觉)
-  * @2. reactive component (交互性)
-  */
 
 
