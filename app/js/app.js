@@ -1,5 +1,5 @@
 /**
- * chapter18: Extracting Container Components (VisibleTodoList, AddTodo)
+ * chapter19: Passing the Store Down Explicitly(明确的) via Props
  */
 
 import React, { Component } from 'react';
@@ -130,6 +130,7 @@ const TodoList = ({
 // extract reactive component VisibleTodoList
 class VisibleTodoList extends Component {
   componentDidMount() {
+  	const {store} = this.props;
     this.unsubscribe = store.subscribe(() =>
       this.forceUpdate()
     );
@@ -141,6 +142,7 @@ class VisibleTodoList extends Component {
 
   render() {
     // const props = this.props;
+    const {store} = this.props;
     const state = store.getState();
 
     return (
@@ -172,7 +174,7 @@ class AddTodo extends Component {
 	}
 
 	addTodo() {
-		store.dispatch({
+		this.props.store.dispatch({
       type: 'ADD_TODO',
       id: this.nextTodoId++,
       text: this.input.value
@@ -219,6 +221,7 @@ const Link = ({
 // 提取成交互组件
 class FilterLink extends Component {
 	componentDidMount() {
+		const { store } = this.props;
 		// console.log('FilterLink componentDidMount')
     this.unsubscribe = store.subscribe(() => {
       this.forceUpdate()
@@ -233,6 +236,7 @@ class FilterLink extends Component {
   }
   render () {
     const props = this.props;
+    const {store} = props;
     // this just reads the store, is not listening
     // for change messages from the store updating
     const state = store.getState();
@@ -257,24 +261,27 @@ class FilterLink extends Component {
 }
 
 // extract presentational component Footer
-const Footer = () => (
+const Footer = ({store}) => (
 	<p>
 	  Show:
 	  {' '}
 	  <FilterLink
 	    filter='SHOW_ALL'
+	    store={store}
 	  >
 	    All
 	  </FilterLink>
 	  {' '}
 	  <FilterLink
 	    filter='SHOW_ACTIVE'
+	    store={store}
 	  >
 	    Active
 	  </FilterLink>
 	  {' '}
 	  <FilterLink
 	    filter='SHOW_COMPLETED'
+	    store={store}
 	  >
 	    Completed
 	  </FilterLink>
@@ -283,26 +290,19 @@ const Footer = () => (
 
 
 /**
- * a normal React Component, must have one method, called render.
+ * just pass props store
  */
-class TodoApp extends Component {
-	render() {
-		return (
-			<div>
-				<AddTodo />
-				<VisibleTodoList />
-				<Footer />				
-			</div>
-		)
-	}
-}
+const TodoApp = ({ store }) => (
+  <div>
+    <AddTodo store={store} />
+    <VisibleTodoList store={store} />
+    <Footer store={store} />
+  </div>
+);
 
 const render = () => {
-	console.log('render ***')
   ReactDOM.render(
-    <TodoApp
-      {...store.getState()}
-    />,
+    <TodoApp store={store} />,
     document.getElementById('root')
   );
 }
