@@ -1,5 +1,5 @@
 /**
- * chapter17: Extracting Container Components (FilterLink)
+ * chapter18: Extracting Container Components (VisibleTodoList, AddTodo)
  */
 
 import React, { Component } from 'react';
@@ -95,7 +95,7 @@ const getVisibleTodos = (
   }
 }
 
-// extract component Todo
+// extract presentational component Todo
 const Todo = ({
 	onClick,
 	completed,
@@ -110,7 +110,7 @@ const Todo = ({
 	</li>
 )
 
-// extract component TodoList
+// extract presentational component TodoList
 const TodoList = ({
 	todos,
 	onTodoClick
@@ -127,22 +127,67 @@ const TodoList = ({
 	</ul>
 )
 
-// extract component AddTodo
-const AddTodo = ({
-	onAddClick
-}) => {
-	let input;
+// extract reactive component VisibleTodoList
+class VisibleTodoList extends Component {
+  componentDidMount() {
+    this.unsubscribe = store.subscribe(() =>
+      this.forceUpdate()
+    );
+  }
 
-	return (
-		<div>
-			<input ref={node => {input = node}} />
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
 
-			<button onClick={() => {
-				onAddClick(input.value);
-				input.value = '';
-			}}>Add Todo</button>
-		</div>
-	)
+  render() {
+    // const props = this.props;
+    const state = store.getState();
+
+    return (
+      <TodoList
+        todos={
+          getVisibleTodos(
+            state.todos,
+            state.visibilityFilter
+          )
+        }
+        onTodoClick={id =>
+          store.dispatch({
+            type: 'TOGGLE_TODO',
+            id
+          })
+        }
+      />
+    );
+  }
+}
+
+// extract reactive component AddTodo
+class AddTodo extends Component {
+	constructor(props) {
+	  super(props);
+	
+	  this.input = null;
+	  this.nextTodoId = 0;
+	}
+
+	addTodo() {
+		store.dispatch({
+      type: 'ADD_TODO',
+      id: this.nextTodoId++,
+      text: this.input.value
+    });
+		this.input.value = '';
+	}
+
+	render() {
+		return (
+			<div>
+				<input ref={node => {this.input = node}} />
+				<button onClick={this.addTodo.bind(this)}>Add Todo</button>
+			</div>
+		)
+	}
 }
 
 
@@ -176,7 +221,6 @@ class FilterLink extends Component {
 	componentDidMount() {
 		// console.log('FilterLink componentDidMount')
     this.unsubscribe = store.subscribe(() => {
-    	console.log('FilterLink forceUpdate')
       this.forceUpdate()
     });
   }
@@ -238,41 +282,15 @@ const Footer = () => (
 )
 
 
-
-let nextTodoId = 0;
-
 /**
  * a normal React Component, must have one method, called render.
  */
 class TodoApp extends Component {
 	render() {
-		let {
-			todos,
-			visibilityFilter
-		} = this.props;
-
-		let visibleTodos = getVisibleTodos(todos, visibilityFilter)
-
 		return (
 			<div>
-				<AddTodo
-					onAddClick={text => {
-						store.dispatch({
-							type: 'ADD_TODO',
-							id: nextTodoId++,
-							text
-						})
-					}} />
-
-				<TodoList
-					todos={visibleTodos}
-					onTodoClick={id => {
-						store.dispatch({
-							type: 'TOGGLE_TODO',
-							id
-						})
-					}} />
-
+				<AddTodo />
+				<VisibleTodoList />
 				<Footer />				
 			</div>
 		)
