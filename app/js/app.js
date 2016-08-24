@@ -1,5 +1,5 @@
 /**
- * chapter19: Passing the Store Down Explicitly(明确的) via Props
+ * chapter20: Passing the Store Down Implicitly(隐式的) via Context
  */
 
 import React, { Component } from 'react';
@@ -130,7 +130,8 @@ const TodoList = ({
 // extract reactive component VisibleTodoList
 class VisibleTodoList extends Component {
   componentDidMount() {
-  	const {store} = this.props;
+  	console.log('context', this.context)
+  	const {store} = this.context;
     this.unsubscribe = store.subscribe(() =>
       this.forceUpdate()
     );
@@ -142,7 +143,7 @@ class VisibleTodoList extends Component {
 
   render() {
     // const props = this.props;
-    const {store} = this.props;
+    const {store} = this.context;
     const state = store.getState();
 
     return (
@@ -164,6 +165,10 @@ class VisibleTodoList extends Component {
   }
 }
 
+VisibleTodoList.contextTypes = {
+  store: React.PropTypes.object
+}
+
 // extract reactive component AddTodo
 class AddTodo extends Component {
 	constructor(props) {
@@ -174,7 +179,7 @@ class AddTodo extends Component {
 	}
 
 	addTodo() {
-		this.props.store.dispatch({
+		this.context.store.dispatch({
       type: 'ADD_TODO',
       id: this.nextTodoId++,
       text: this.input.value
@@ -190,6 +195,10 @@ class AddTodo extends Component {
 			</div>
 		)
 	}
+}
+
+AddTodo.contextTypes = {
+  store: React.PropTypes.object
 }
 
 
@@ -221,7 +230,7 @@ const Link = ({
 // 提取成交互组件
 class FilterLink extends Component {
 	componentDidMount() {
-		const { store } = this.props;
+		const { store } = this.context;
 		// console.log('FilterLink componentDidMount')
     this.unsubscribe = store.subscribe(() => {
       this.forceUpdate()
@@ -236,7 +245,7 @@ class FilterLink extends Component {
   }
   render () {
     const props = this.props;
-    const {store} = props;
+    const {store} = this.context;
     // this just reads the store, is not listening
     // for change messages from the store updating
     const state = store.getState();
@@ -260,28 +269,29 @@ class FilterLink extends Component {
   }
 }
 
+FilterLink.contextTypes = {
+  store: React.PropTypes.object
+}
+
 // extract presentational component Footer
-const Footer = ({store}) => (
+const Footer = () => (
 	<p>
 	  Show:
 	  {' '}
 	  <FilterLink
 	    filter='SHOW_ALL'
-	    store={store}
 	  >
 	    All
 	  </FilterLink>
 	  {' '}
 	  <FilterLink
 	    filter='SHOW_ACTIVE'
-	    store={store}
 	  >
 	    Active
 	  </FilterLink>
 	  {' '}
 	  <FilterLink
 	    filter='SHOW_COMPLETED'
-	    store={store}
 	  >
 	    Completed
 	  </FilterLink>
@@ -292,17 +302,39 @@ const Footer = ({store}) => (
 /**
  * just pass props store
  */
-const TodoApp = ({ store }) => (
+const TodoApp = () => (
   <div>
-    <AddTodo store={store} />
-    <VisibleTodoList store={store} />
-    <Footer store={store} />
+    <AddTodo />
+    <VisibleTodoList />
+    <Footer />
   </div>
 );
 
+
+/**
+ * define a Provider component to pass store to every child component through Context implicity
+ * but use the context feature is not a good idea in React philosophy.
+ */
+class Provider extends Component {
+  getChildContext() {
+    return {
+      store: this.props.store // This corresponds to the `store` passed in as a prop
+    };
+  }
+  render() {
+    return this.props.children;
+  }
+}
+
+Provider.childContextTypes = {
+  store: React.PropTypes.object
+}
+
 const render = () => {
   ReactDOM.render(
-    <TodoApp store={store} />,
+    <Provider store={store}>
+    	<TodoApp />
+    </Provider>,
     document.getElementById('root')
   );
 }
