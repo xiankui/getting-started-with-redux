@@ -1,5 +1,5 @@
 /**
- * chapter20: Passing the Store Down Implicitly(隐式的) via Context
+ * chapter21: Passing the Store Down with <Provider> from React Redux
  */
 
 import React, { Component } from 'react';
@@ -7,6 +7,7 @@ import ReactDOM from 'react-dom';
 
 // create a top level store with combineReducers
 import { createStore, combineReducers } from 'redux';
+import { Provider } from 'react-redux';
 
 // reducer composition with arrays
 const todo = (state, action) => {
@@ -315,20 +316,20 @@ const TodoApp = () => (
  * define a Provider component to pass store to every child component through Context implicity
  * but use the context feature is not a good idea in React philosophy.
  */
-class Provider extends Component {
-  getChildContext() {
-    return {
-      store: this.props.store // This corresponds to the `store` passed in as a prop
-    };
-  }
-  render() {
-    return this.props.children;
-  }
-}
+// class Provider extends Component {
+//   getChildContext() {
+//     return {
+//       store: this.props.store // This corresponds to the `store` passed in as a prop
+//     };
+//   }
+//   render() {
+//     return this.props.children;
+//   }
+// }
 
-Provider.childContextTypes = {
-  store: React.PropTypes.object
-}
+// Provider.childContextTypes = {
+//   store: React.PropTypes.object
+// }
 
 const render = () => {
   ReactDOM.render(
