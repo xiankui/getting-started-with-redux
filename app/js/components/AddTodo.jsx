@@ -33,34 +33,3 @@ export default connect(
 	},
 	mapDispatchToProps
 	)(AddTodo);
-
-// class AddTodo extends Component {
-// 	constructor(props) {
-// 	  super(props);
-	
-// 	  this.input = null;
-// 	  this.nextTodoId = 0;
-// 	}
-
-// 	addTodo() {
-// 		this.context.store.dispatch({
-//       type: 'ADD_TODO',
-//       id: this.nextTodoId++,
-//       text: this.input.value
-//     });
-// 		this.input.value = '';
-// 	}
-
-// 	render() {
-// 		return (
-// 			<div>
-// 				<input ref={node => {this.input = node}} />
-// 				<button onClick={this.addTodo.bind(this)}>Add Todo</button>
-// 			</div>
-// 		)
-// 	}
-// }
-
-// AddTodo.contextTypes = {
-//   store: React.PropTypes.object
-// }

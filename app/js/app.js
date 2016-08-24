@@ -1,39 +1,12 @@
 /**
- * chapter24: Generating Containers with connect() from React Redux (FooterLink)
+ * chapter25: Extracting Action Creators
  */
-
-import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-import store from './store';
-import { Provider } from 'react-redux';
-
-import TodoList from './components/TodoList.jsx';
-import AddTodo from './components/AddTodo.jsx';
-import Footer from './components/Footer.jsx';
+import AppRoot from './components/AppRoot.jsx';
 
 
-/**
- * just pass props store
- */
-const TodoApp = () => (
-  <div>
-    <AddTodo />
-    <TodoList />
-    <Footer />
-  </div>
+ReactDOM.render(
+  AppRoot,
+  document.getElementById('root')
 );
-
-
-// const render = () => {
-  ReactDOM.render(
-    <Provider store={store}>
-    	<TodoApp />
-    </Provider>,
-    document.getElementById('root')
-  );
-// }
-
-// render();
-
-
