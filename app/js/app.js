@@ -10,7 +10,6 @@ import { createStore } from 'redux';
 
 // a reducer
 const counter = (state = 0, action) => {
-	console.log('counter reducer action', action)
 	switch (action.type) {
 		case 'INCREMENT':
 			return state + 1;
@@ -24,7 +23,7 @@ const counter = (state = 0, action) => {
 // createStore
 const store = createStore(counter);
 
-// React render like function
+// a presentational(表象、直觉) component
 const Counter = ({
   value,
   onIncrement,
@@ -56,8 +55,16 @@ const render = () => {
   );
 }
 
-render();
+render(); // dispatch @@redux/INIT
 
 // everytime store.dispatch, subscribe called
 store.subscribe(render)
 
+/**
+ * lifecycle
+ * 1. dispatch happend
+ * 2. reducer called
+ * 3. state changed
+ * 4. subscribe listeners called
+ * 5. rerender
+ */
