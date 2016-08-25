@@ -1,5 +1,6 @@
 // a counter reducer
 const counter = (state = 0, action) => {
+	console.log('dispatch ***', action)
   switch (action.type) {
     case 'INCREMENT':
       return state + 1;
@@ -22,12 +23,25 @@ const store = createStore(counter);
  * subscribe()
  */
 const render = () => {
- document.body.innerText = store.getState();
+	console.log('render ui ********')
+ document.getElementById('root').innerText = store.getState();
 };
 
-store.subscribe(render);
+store.subscribe(() => {
+	console.log('subscribe *********')
+	render();
+});
+
 render(); // calling once to render the initial state (0), then the subscribe will update subsequently
 
 document.addEventListener('click', () => {
+	console.log('click ********')
    store.dispatch({ type : 'INCREMENT' })
 });
+
+/**
+ * lifecycle
+ * @click => dispatch => change state
+ * @dispatch => subscribe => render
+ * @getState
+ */
