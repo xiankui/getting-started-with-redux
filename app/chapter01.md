@@ -7,13 +7,13 @@
  * the state tree is read only.
  * Any time you want to change the state, you have to dispatch an action.
 
-## The Reducer Function
+## 03. The Reducer Function
  * to describe state mutations you have to write a function that takes the previous state of the app and the action being dispatched, then returns the next state of the app. This function is called the Reducer.
  * Reducer is pure function.
 
 ---
 
-## 03. Pure and Impure Functions
+## Pure and Impure Functions
  * Pure:
 
  ```
