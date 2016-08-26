@@ -171,10 +171,7 @@ const Todos = ({
 
 	return (
 	  <div>
-	    <ul>
-	    	{list}
-	    </ul>
-	    <button onClick={() => {
+	  	<button onClick={() => {
 	    	let _text = redux.slice().sort(function() {
 				  return .5 - Math.random();
 				});
@@ -186,6 +183,9 @@ const Todos = ({
 
 		    count++;
 	    }}>add todo</button>
+	    <ul>
+	    	{list}
+	    </ul>
 	  </div>
 	);
 }
