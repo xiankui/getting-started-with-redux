@@ -3,6 +3,7 @@
  */
 import React from 'react';
 import { connect } from 'react-redux';
+import {toggleTodo} from '../actions';
 
 // extract presentational component Todo
 const Todo = ({
@@ -69,10 +70,7 @@ const mapDispatchToProps = (
 ) => {
   return {
     onTodoClick: (id) => {
-      dispatch({
-      	type: 'TOGGLE_TODO',
-      	id
-      });
+      dispatch(toggleTodo(id));
     }
   };
 };
