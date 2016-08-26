@@ -10,8 +10,6 @@ import { createStore, combineReducers } from 'redux';
 
 // reducer composition with arrays
 const todo = (state, action) => {
-	Object.freeze(state);
-
 	switch (action.type) {
 		case 'ADD_TODO':
 			return {
@@ -35,8 +33,6 @@ const todo = (state, action) => {
 }
 
 const todos = (state = [], action) => {
-	Object.freeze(state);
-
 	switch (action.type) {
 		case 'ADD_TODO':
 			return [
@@ -51,9 +47,8 @@ const todos = (state = [], action) => {
 }
 
 
-// To store this new information, we don't need to change the existing reducers.
+// another reducer
 const visibilityFilter = (state = 'SHOW_ALL', action) => {
-	Object.freeze(state);
 	switch (action.type) {
 		case 'SET_VISIBILITY_FILTER':
 			return action.filter;
@@ -330,7 +325,7 @@ store.subscribe(render)
  /**
   * @two type of component 
   * @1. presentational component (表象、直觉)
-  * @2. reactive component (交互性)
+  * @2. container (reactive) component (交互性)
   */
 
 
