@@ -1,4 +1,6 @@
-# Todo App using React Redux Webpack
+# Getting Started With Redux
+
+The content is based on [@sadams' todo-redux-react-webpack](https://github.com/sadams/todo-redux-react-webpack)
 
 Yet another Todo app using React Redux and Webpack. 
 
@@ -26,7 +28,7 @@ This repository is meant to be used with npm 3. For version 2 also install:
 
 ## Learn step by step 
 	
-the step by step courses is based on [tayiorbeii/egghead.io_redux_course_notes](https://github.com/tayiorbeii/egghead.io_redux_course_notes)
+the step by step courses is based on [@tayiorbeii' egghead.io_redux_course_notes](https://github.com/tayiorbeii/egghead.io_redux_course_notes)
 
 	git checkout chapter01
 	...
