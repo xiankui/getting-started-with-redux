@@ -83,6 +83,17 @@ class TodoApp extends Component {
 	render() {
 		return (
 			<div>
+				<input ref={node => {this.input = node}} />
+
+				<button onClick={() => {
+					store.dispatch({
+						type: 'ADD_TODO',
+						id: nextTodoId++,
+						text: this.input.value,
+					})
+
+					this.input.value = '';
+				}}>Add Todo</button>
 				<ul>
 					{
 						this.props.todos.map(todo => {
@@ -100,18 +111,6 @@ class TodoApp extends Component {
 						})
 					}
 				</ul>
-
-				<input ref={node => {this.input = node}} />
-
-				<button onClick={() => {
-					store.dispatch({
-						type: 'ADD_TODO',
-						id: nextTodoId++,
-						text: this.input.value,
-					})
-
-					this.input.value = '';
-				}}>Add Todo</button>
 			</div>
 		)
 	}
