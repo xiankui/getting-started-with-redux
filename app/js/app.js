@@ -52,7 +52,7 @@ const todos = (state = [], action) => {
 }
 
 
-// To store this new information, we don't need to change the existing reducers.
+// another reducer
 const visibilityFilter = (state = 'SHOW_ALL', action) => {
 	Object.freeze(state);
 	switch (action.type) {
@@ -75,8 +75,7 @@ const todoApp = combineReducers({
 // createStore
 const store = createStore(todoApp);
 
-// a function like component that filter special todo
-// the only return is the component render
+// a presentational component
 const FilterLink = ({
   filter,
   currentFilter,
@@ -101,36 +100,6 @@ const FilterLink = ({
   )
 }
 
-// function like FliterLinks component
-const FilterLinks = ({
-	visibilityFilter
-}) => (
-	<p>
-	  Show:
-	  {' '}
-	  <FilterLink
-	    filter='SHOW_ALL'
-	    currentFilter={visibilityFilter}
-	  >
-	    All
-	  </FilterLink>
-	  {' '}
-	  <FilterLink
-	    filter='SHOW_ACTIVE'
-	    currentFilter={visibilityFilter}
-	  >
-	    Active
-	  </FilterLink>
-	  {' '}
-	  <FilterLink
-	    filter='SHOW_COMPLETED'
-	    currentFilter={visibilityFilter}
-	  >
-	    Completed
-	  </FilterLink>
-	</p>
-)
-
 // a normal function
 // base on todos & filter, get visible todos
 const getVisibleTodos = (
@@ -152,14 +121,17 @@ const getVisibleTodos = (
   }
 }
 
-// extract component Todo
+// extract a presentational component Todo
 const Todo = ({
 	onClick,
 	completed,
 	text
 }) => (
 	<li
-		onClick={onClick}
+		onClick={() => {
+			console.log('li element onClick *** ');
+			onClick();
+		}}
 		style={{
 			textDecoration: completed ? 'line-through' : 'none'
 		}}>
@@ -178,7 +150,10 @@ const TodoList = ({
 				<Todo
 					key={todo.id}
 					{...todo}
-					onClick={() => onTodoClick(todo.id)} />
+					onClick={() => {
+						console.log('Todo onClick *** ', todo.id)
+						onTodoClick(todo.id);
+					}} />
 			)
 		}
 	</ul>
@@ -200,17 +175,6 @@ class TodoApp extends Component {
 
 		return (
 			<div>
-				<TodoList
-					todos={visibleTodos}
-					onTodoClick={id => {
-						store.dispatch({
-							type: 'TOGGLE_TODO',
-							id
-						})
-					}} />
-
-				<FilterLinks visibilityFilter={visibilityFilter} />
-
 				<input ref={node => {this.input = node}} />
 
 				<button onClick={() => {
@@ -222,6 +186,41 @@ class TodoApp extends Component {
 
 					this.input.value = '';
 				}}>Add Todo</button>
+
+				<TodoList
+					todos={visibleTodos}
+					onTodoClick={id => {
+						console.log('TodoList onTodoClick **** ', id)
+						store.dispatch({
+							type: 'TOGGLE_TODO',
+							id
+						})
+					}} />
+
+				<p>
+				  Show:
+				  {' '}
+				  <FilterLink
+				    filter='SHOW_ALL'
+				    currentFilter={visibilityFilter}
+				  >
+				    All
+				  </FilterLink>
+				  {' '}
+				  <FilterLink
+				    filter='SHOW_ACTIVE'
+				    currentFilter={visibilityFilter}
+				  >
+				    Active
+				  </FilterLink>
+				  {' '}
+				  <FilterLink
+				    filter='SHOW_COMPLETED'
+				    currentFilter={visibilityFilter}
+				  >
+				    Completed
+				  </FilterLink>
+				</p>
 			</div>
 		)
 	}
@@ -256,5 +255,10 @@ store.subscribe(render)
  *		 and then rerender UI base on the new state, becauseof the store.subscribe()
  */
 
+/**
+ * @component in component
+ * @data flow from parent to child (数据向下流动)
+ * @event flow from child to parent (事件向上传递)
+ */
 
 
