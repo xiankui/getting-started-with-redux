@@ -2,7 +2,7 @@
  * chapter24: Generating Containers with connect() from React Redux (FooterLink)
  */
 
-import React, { Component } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 
 import store from './store';
