@@ -170,8 +170,10 @@ const Link = ({
 	)
 }
 
-// extract reactive component FilterLink
-// 提取成交互组件
+/**
+ * extract container (reactive) component FilterLink (提取成交互组件)
+ * data and events are not needed to pass down from root (数据和事件不再需要从上到下一层层的传递)
+ */
 class FilterLink extends Component {
 	componentDidMount() {
 		// console.log('FilterLink componentDidMount')
@@ -280,7 +282,6 @@ class TodoApp extends Component {
 }
 
 const render = () => {
-	console.log('render ***')
   ReactDOM.render(
     <TodoApp
       {...store.getState()}
