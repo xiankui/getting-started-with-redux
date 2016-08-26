@@ -10,8 +10,6 @@ import { createStore, combineReducers } from 'redux';
 
 // reducer composition with arrays
 const todo = (state, action) => {
-	Object.freeze(state);
-
 	switch (action.type) {
 		case 'ADD_TODO':
 			return {
@@ -35,8 +33,6 @@ const todo = (state, action) => {
 }
 
 const todos = (state = [], action) => {
-	Object.freeze(state);
-
 	switch (action.type) {
 		case 'ADD_TODO':
 			return [
@@ -51,9 +47,8 @@ const todos = (state = [], action) => {
 }
 
 
-// To store this new information, we don't need to change the existing reducers.
+// another reducer
 const visibilityFilter = (state = 'SHOW_ALL', action) => {
-	Object.freeze(state);
 	switch (action.type) {
 		case 'SET_VISIBILITY_FILTER':
 			return action.filter;
@@ -74,8 +69,7 @@ const todoApp = combineReducers({
 // createStore
 const store = createStore(todoApp);
 
-// a function like component that filter special todo
-// the only return is the component render
+// a presentational component
 const FilterLink = ({
   filter,
   currentFilter,
@@ -100,7 +94,7 @@ const FilterLink = ({
   )
 }
 
-// function like FliterLinks component
+// a presentational component
 const FilterLinks = ({
 	visibilityFilter
 }) => (
@@ -162,9 +156,23 @@ class TodoApp extends Component {
 			todos,
 			visibilityFilter
 		} = this.props;
-		let visibleTodos = getVisibleTodos(todos, visibilityFilter)
+
+		let visibleTodos = getVisibleTodos(todos, visibilityFilter);
+
 		return (
 			<div>
+				<input ref={node => {this.input = node}} />
+
+				<button onClick={() => {
+					store.dispatch({
+						type: 'ADD_TODO',
+						id: nextTodoId++,
+						text: this.input.value,
+					})
+
+					this.input.value = '';
+				}}>Add Todo</button>
+
 				<ul>
 					{
 						visibleTodos.map(todo => {
@@ -184,23 +192,18 @@ class TodoApp extends Component {
 				</ul>
 
 				<FilterLinks visibilityFilter={visibilityFilter} />
-
-				<input ref={node => {this.input = node}} />
-
-				<button onClick={() => {
-					store.dispatch({
-						type: 'ADD_TODO',
-						id: nextTodoId++,
-						text: this.input.value,
-					})
-
-					this.input.value = '';
-				}}>Add Todo</button>
 			</div>
 		)
 	}
 }
 
+/**
+ * ES2015 spread && React 语法糖
+ * {...store.getState()}
+ * {todos: [], visibilityFilter: 'SHOW_ALL'}
+ * todos={[]}
+ * visibilityFilter='SHOW_ALL'
+ */
 const render = () => {
   ReactDOM.render(
     <TodoApp
@@ -215,6 +218,16 @@ render();
 // everytime store.dispatch, subscribe called and rerender a new ui of current state
 // Now the cycle can be repeated.
 store.subscribe(render)
+
+
+/**
+ * ES2015 ...spread
+ * React 又给了一层语法糖 => key=value
+ */
+let _spread = {
+	...store.getState()
+};
+console.log('_spread', _spread)
 
 /**
  * @remind always
