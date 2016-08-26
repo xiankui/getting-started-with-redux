@@ -96,9 +96,13 @@ const getVisibleTodos = (
   }
 }
 
+/**
+ * everytime dispatch happend, re-return todos
+ */
 const mapStateToProps = (
   state
 ) => {
+  console.log('mapStateToProps state *** ', state)
   return {
     todos: getVisibleTodos(
       state.todos,
@@ -106,9 +110,11 @@ const mapStateToProps = (
     )
   };
 };
+
 const mapDispatchToProps = (
   dispatch
 ) => {
+  console.log('mapDispatchToProps dispatch ****')
   return {
     onTodoClick: (id) => {
       dispatch({
@@ -123,3 +129,9 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(TodoList);
+
+/**
+ * @connect
+ * @1. connect state and dispatch to container component as explicitly props.
+ * @2. everytime dispatch happend, re-called mapStateToProps to re-render the container component.
+ */
