@@ -10,8 +10,6 @@ import { createStore, combineReducers } from 'redux';
 
 // reducer composition with arrays
 const todo = (state, action) => {
-	Object.freeze(state);
-
 	switch (action.type) {
 		case 'ADD_TODO':
 			return {
@@ -35,8 +33,6 @@ const todo = (state, action) => {
 }
 
 const todos = (state = [], action) => {
-	Object.freeze(state);
-
 	switch (action.type) {
 		case 'ADD_TODO':
 			return [
@@ -51,9 +47,8 @@ const todos = (state = [], action) => {
 }
 
 
-// To store this new information, we don't need to change the existing reducers.
+// another reducer
 const visibilityFilter = (state = 'SHOW_ALL', action) => {
-	Object.freeze(state);
 	switch (action.type) {
 		case 'SET_VISIBILITY_FILTER':
 			return action.filter;
@@ -127,7 +122,7 @@ const TodoList = ({
 	</ul>
 )
 
-// extract reactive component VisibleTodoList
+// extract container (reactive) component VisibleTodoList
 class VisibleTodoList extends Component {
   componentDidMount() {
     this.unsubscribe = store.subscribe(() =>
@@ -162,33 +157,30 @@ class VisibleTodoList extends Component {
   }
 }
 
-// extract reactive component AddTodo
-class AddTodo extends Component {
-	constructor(props) {
-	  super(props);
-	
-	  this.input = null;
-	  this.nextTodoId = 0;
-	}
+let nextTodoId = 0;
 
-	addTodo() {
-		store.dispatch({
-      type: 'ADD_TODO',
-      id: this.nextTodoId++,
-      text: this.input.value
-    });
-		this.input.value = '';
-	}
+// extract container (reactive) component AddTodo
+const AddTodo = () => {
+  let input;
 
-	render() {
-		return (
-			<div>
-				<input ref={node => {this.input = node}} />
-				<button onClick={this.addTodo.bind(this)}>Add Todo</button>
-			</div>
-		)
-	}
-}
+  return (
+    <div>
+      <input ref={node => {
+        input = node;
+      }} />
+      <button onClick={() => {
+          store.dispatch({
+            type: 'ADD_TODO',
+            id: nextTodoId++,
+            text: input.value
+          })
+        input.value = '';
+      }}>
+        Add Todo
+      </button>
+    </div>
+  );
+};
 
 
 // extract presentational component Link
@@ -221,6 +213,7 @@ class FilterLink extends Component {
 	componentDidMount() {
 		// console.log('FilterLink componentDidMount')
     this.unsubscribe = store.subscribe(() => {
+    	console.log('FilterLink subscribe forceUpdate ***')
       this.forceUpdate()
     });
   }
