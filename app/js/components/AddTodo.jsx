@@ -3,36 +3,39 @@
  */
 import React from 'react';
 import { connect } from 'react-redux';
-import { addTodo } from '../actions';
 
 let input;
+let nextTodoId = 0;
 
 const AddTodo = ({
-	addTodo
+	dispatch
 }) => (
 	<div>
 		<input ref={node => {input = node}} />
 		<button onClick={() => {
-			addTodo(input.value);
+			dispatch({
+		    type: 'ADD_TODO',
+		    id: nextTodoId++,
+		    text: input.value
+			})
+
 			input.value = '';
 		}}>Add Todo</button>
 	</div>
 )
 
-const mapDispatchToProps = (dispatch) => {
-	return {
-		addTodo: (text) => {
-			dispatch(addTodo(text))
-		}
-	}
-}
 
-export default connect(
-	state => {
-		return {}
-	},
-	mapDispatchToProps
-	)(AddTodo);
+
+// export default connect(
+// 	state => {
+// 		return {}
+// 	},
+// 	dispatch => {
+// 		return { dispatch }
+// 	}
+// )(AddTodo)
+
+export default connect()(AddTodo);
 
 // class AddTodo extends Component {
 // 	constructor(props) {

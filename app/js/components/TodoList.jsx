@@ -99,6 +99,7 @@ const getVisibleTodos = (
 const mapStateToProps = (
   state
 ) => {
+  console.log('TodoList mapStateToProps ***')
   return {
     todos: getVisibleTodos(
       state.todos,
