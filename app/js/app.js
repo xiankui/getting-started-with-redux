@@ -35,8 +35,6 @@ const todo = (state, action) => {
 }
 
 const todos = (state = [], action) => {
-	console.log('dispatch to reducer todos ---', action)
-
 	Object.freeze(state);
 
 	switch (action.type) {
@@ -53,9 +51,8 @@ const todos = (state = [], action) => {
 }
 
 
-// To store this new information, we don't need to change the existing reducers.
+// another reducer
 const visibilityFilter = (state = 'SHOW_ALL', action) => {
-	console.log('dispatch to reducer visibilityFilter ***', action);
 	Object.freeze(state);
 	switch (action.type) {
 		case 'SET_VISIBILITY_FILTER':
@@ -86,14 +83,6 @@ class TodoApp extends Component {
 	render() {
 		return (
 			<div>
-				<ul>
-					{
-						this.props.todos.map(todo => {
-							return <li key={todo.id}>{todo.text}</li>;
-						})
-					}
-				</ul>
-
 				<input ref={node => {this.input = node}} />
 
 				<button onClick={() => {
@@ -105,6 +94,13 @@ class TodoApp extends Component {
 
 					this.input.value = '';
 				}}>Add Todo</button>
+				<ul>
+					{
+						this.props.todos.map(todo => {
+							return <li key={todo.id}>{todo.text}</li>;
+						})
+					}
+				</ul>				
 			</div>
 		)
 	}
