@@ -11,8 +11,6 @@ import { createStore, combineReducers } from 'redux';
 
 // reducer composition with arrays
 const todo = (state, action) => {
-	Object.freeze(state);
-
 	switch (action.type) {
 		case 'ADD_TODO':
 			return {
@@ -36,8 +34,6 @@ const todo = (state, action) => {
 }
 
 const todos = (state = [], action) => {
-	Object.freeze(state);
-
 	switch (action.type) {
 		case 'ADD_TODO':
 			return [
@@ -52,7 +48,7 @@ const todos = (state = [], action) => {
 }
 
 
-// To store this new information, we don't need to change the existing reducers.
+// another reducer
 const visibilityFilter = (state = 'SHOW_ALL', action) => {
 	Object.freeze(state);
 	switch (action.type) {
@@ -96,7 +92,7 @@ const getVisibleTodos = (
   }
 }
 
-// extract component Todo
+// extract presentational component Todo
 const Todo = ({
 	onClick,
 	completed,
@@ -111,7 +107,7 @@ const Todo = ({
 	</li>
 )
 
-// extract component TodoList
+// extract presentational component TodoList
 const TodoList = ({
 	todos,
 	onTodoClick
@@ -128,7 +124,7 @@ const TodoList = ({
 	</ul>
 )
 
-// extract component AddTodo
+// extract presentational component AddTodo
 const AddTodo = ({
 	onAddClick
 }) => {
@@ -146,7 +142,7 @@ const AddTodo = ({
 	)
 }
 
-// extract component FilterLink
+// extract presentational component FilterLink
 const FilterLink = ({
   filter,
   currentFilter,
@@ -170,7 +166,7 @@ const FilterLink = ({
   )
 }
 
-// extract component Footer
+// extract presentational component Footer
 const Footer = ({
 	visibilityFilter,
 	onFilterClick
@@ -288,4 +284,6 @@ store.subscribe(render)
   * @data flow from top to bottom, event emit from bottom to top (数据向下流动，事件向上传递)
   */
 
+// the presentational component is a good pattern to follow
+// but, props pass and pass, o my god...
 
