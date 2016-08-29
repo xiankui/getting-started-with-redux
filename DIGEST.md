@@ -3,6 +3,8 @@
 React: respond or behave in a particular way in response to something. (from translate.google.cn)
 以**特定**的方式对**某些东西**作出**回应或行为**。
 
+Redux is a predictable state container for JavaScript apps.
+
 ## there principles of redux
 
 * The Single Immutable State Tree (单一的不可变的状态树)
