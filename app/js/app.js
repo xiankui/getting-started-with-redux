@@ -1,5 +1,5 @@
 /**
- * chapter05: Avoiding Array Mutations
+ * chapter05: Avoiding Object Mutations with Object.assign() and ...spread
  */
 
 import React from 'react';
@@ -8,35 +8,36 @@ import ReactDOM from 'react-dom';
 // create store first
 import { createStore } from 'redux';
 
+var initState = {
+  id: 0,
+  text: 'Learn Redux',
+  completed: false
+};
+
 // a reducer
-// const counter = (state = [1, 3, 5], action) => {
-// 	Object.freeze(state);
-// 	let len = state.length;
-// 	switch (action.type) {
-// 		case 'PUSH':
-// 			state.push(len*2 + 1)
-// 			return state;
-// 		case 'SPLICE':
-// 			state.splice(len - 1, 1);
-// 			return state;
-// 		default: 
-// 			return state;
-// 	}
+// const counter = (state = initState, action) => {
+//   Object.freeze(state); // this is default, because of state track and virtue dom diff
+//   let len = state.length;
+//   switch (action.type) {
+//     case 'TOGGLE_TODO':
+//       state.completed = !state.completed
+//       return state;
+      
+//     default: 
+//       return state;
+//   }
 // }
 
-const counter = (state = [1, 3, 5], action) => {
+const counter = (state = initState, action) => {
 	Object.freeze(state); // this is default, because of state track and virtue dom diff
 	let len = state.length;
 	switch (action.type) {
-		case 'PUSH':
-			return [
-				...state,
-				len * 2 + 1,
-			];
-		case 'SPLICE':
-			return [
-				...state.slice(0, len-1)
-			];
+		case 'TOGGLE_TODO':
+			return {
+        ...state,
+        completed: !state.completed
+      }
+		
 		default: 
 			return state;
 	}
@@ -47,16 +48,17 @@ const store = createStore(counter);
 
 // React render like function
 const Counter = ({
-  value,
-  onIncrement,
-  onDecrement
+  todo,
+  onToggle,
 }) => {
 	console.log('component render ***')
 	return (
 	  <div>
-	    <h1>{value}</h1>
-	    <button onClick={onIncrement}>+</button>
-	    <button onClick={onDecrement}>-</button>
+	    <h1 style={{
+        textDecoration: todo.completed ? 'line-through' : 'none',
+        color: todo.completed ? '#aaa' : '#333'
+      }}>{todo.text}</h1>
+	    <button onClick={onToggle}>toggle todo</button>
 	  </div>
 	);
 }
@@ -64,15 +66,10 @@ const Counter = ({
 const render = () => {
   ReactDOM.render(
     <Counter
-      value={store.getState().join(', ')}
-      onIncrement={() =>
+      todo={store.getState()}
+      onToggle={() =>
         store.dispatch({
-          type: 'PUSH'
-        })
-      }
-      onDecrement={() =>
-        store.dispatch({
-          type: 'SPLICE'
+          type: 'TOGGLE_TODO'
         })
       }
     />,
