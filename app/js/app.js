@@ -56,7 +56,7 @@ const store = createStore(todos);
 var count = 0,
 		redux = ['r', 'e', 'd', 'u', 'x'];
 
-// React render like function
+// a presentational component
 const Todos = ({
   todos,
 }) => {
@@ -73,9 +73,6 @@ const Todos = ({
 
 	return (
 	  <div>
-	    <ul>
-	    	{list}
-	    </ul>
 	    <button onClick={() => {
 	    	let _text = redux.slice().sort(function() {
 				  return .5 - Math.random();
@@ -88,6 +85,10 @@ const Todos = ({
 
 		    count++;
 	    }}>add todo</button>
+
+      <ul>
+        {list}
+      </ul>
 	  </div>
 	);
 }
