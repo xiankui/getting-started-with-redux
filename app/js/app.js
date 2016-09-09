@@ -293,9 +293,7 @@ class TodoApp extends Component {
 const render = () => {
 	console.log('render ***')
   ReactDOM.render(
-    <TodoApp
-      {...store.getState()}
-    />,
+    <TodoApp />,
     document.getElementById('root')
   );
 }
