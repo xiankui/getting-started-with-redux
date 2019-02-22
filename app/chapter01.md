@@ -1,4 +1,4 @@
-# there principles of redux
+# There principles of redux
 
 ## 01. The Single Immutable State Tree (单一的不可变的状态树)
  * The entire state of the application will be represented by one JavaScript object.
