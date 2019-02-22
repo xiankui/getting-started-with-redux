@@ -1,34 +1,25 @@
+const path = require('path')
+
 module.exports = {
   entry: {
-    javascript: "./app/js/app.js",
-    html: "./app/index.html"
+    app: './app/js/app.js',
   },
   output: {
-    path: __dirname + "/dist",
-    filename: "./js/app.js"
+    path: path.resolve(__dirname, 'public'),
+    filename: 'app.bundle.js',
+    publicPath: '/'
   },
   module: {
-    loaders: [
-      {
-        test: /\.html$/,
-        loader: "file?name=[name].[ext]"
-      },
+    rules: [
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        loaders: ["react-hot", 'babel?'+JSON.stringify(
-          {
-            presets: ['react', 'es2015'],
-            "plugins": [
-              "syntax-class-properties",
-              "syntax-decorators",
-              "syntax-object-rest-spread",
-
-              "transform-class-properties",
-              "transform-object-rest-spread"
-            ]
+        use: {
+          loader: 'babel-loader',
+          options: {
+            babelrc: true
           }
-        )]
+        }
       }
     ]
   }
