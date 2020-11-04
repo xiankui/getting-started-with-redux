@@ -302,7 +302,8 @@ render();
 
 // everytime store.dispatch, subscribe called and rerender a new ui of current state
 // Now the cycle can be repeated.
-store.subscribe(render)
+// subscribe in each container component instead, no need full render
+// store.subscribe(render)
 
 /**
  * @remind always
